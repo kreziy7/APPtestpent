@@ -1,0 +1,15 @@
+exports.errorHandler = (err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+};
+
+exports.notFound = (req, res, next) => {
+    res.status(404).json({
+        success: false,
+        message: `Not Found - ${req.originalUrl}`
+    });
+};
