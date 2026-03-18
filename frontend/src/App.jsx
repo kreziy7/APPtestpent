@@ -9,11 +9,13 @@ import {
 import axios from 'axios';
 
 // API base URL
-const API_URL = 'http://localhost:5000/notes';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = `${BASE_URL}/notes`;
+const RESUME_URL = `${BASE_URL}/resume`;
 
 // --- Sidebar ---
 const Sidebar = ({ onAddClick, currentView, setView }) => (
-  <aside className="fixed left-0 top-0 h-screen w-72 bg-black border-r border-[#1a1a1a] p-6 flex flex-col gap-10 hidden lg:flex z-50">
+  <aside className="fixed left-0 top-0 h-screen w-72 bg-black border-r border-border-color p-6 flex flex-col gap-10 hidden lg:flex z-50">
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]">
         <Scroll className="text-black w-6 h-6" />
@@ -52,7 +54,7 @@ const Sidebar = ({ onAddClick, currentView, setView }) => (
       </button>
     </nav>
 
-    <div className="pt-6 border-t border-[#1a1a1a] flex items-center gap-4">
+    <div className="pt-6 border-t border-border-color flex items-center gap-4">
       <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold border border-zinc-700">ST</div>
       <div className="flex-1 overflow-hidden">
         <p className="text-sm font-semibold truncate">Student User</p>
@@ -68,7 +70,7 @@ const Sidebar = ({ onAddClick, currentView, setView }) => (
 const SidebarItem = ({ icon, label, active = false, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group w-full text-left ${active ? 'bg-[#1a1a1a] text-white' : 'text-zinc-500 hover:text-white hover:bg-[#111111]'}`}
+    className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group w-full text-left ${active ? 'bg-border-color text-white' : 'text-zinc-500 hover:text-white hover:bg-accent-secondary'}`}
   >
     <span className={`${active ? 'text-white' : 'group-hover:text-white '}`}>{icon}</span>
     <span className="text-sm font-semibold">{label}</span>
@@ -91,7 +93,7 @@ const ResumeView = () => {
   useEffect(() => {
     const fetchResume = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/resume');
+        const res = await axios.get(RESUME_URL);
         if (res.data) setFormData(res.data);
       } catch (err) {
         console.error('Resume fetch error:', err);
@@ -105,7 +107,7 @@ const ResumeView = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      await axios.post('http://localhost:5000/resume', formData);
+      await axios.post(RESUME_URL, formData);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -155,7 +157,7 @@ const ResumeView = () => {
             <textarea
               value={formData.experience}
               onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-              className="bg-black border border-[#1a1a1a] rounded-xl p-4 text-sm focus:outline-none focus:border-white h-32 resize-none"
+              className="bg-black border border-border-color rounded-xl p-4 text-sm focus:outline-none focus:border-white h-32 resize-none"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -163,7 +165,7 @@ const ResumeView = () => {
             <textarea
               value={formData.skills}
               onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-              className="bg-black border border-[#1a1a1a] rounded-xl p-4 text-sm focus:outline-none focus:border-white h-24 resize-none"
+              className="bg-black border border-border-color rounded-xl p-4 text-sm focus:outline-none focus:border-white h-24 resize-none"
             />
           </div>
         </div>
@@ -233,7 +235,7 @@ const InputGroup = ({ label, value, onChange }) => (
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-black border border-[#1a1a1a] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition-all"
+      className="bg-black border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition-all"
     />
   </div>
 );
@@ -262,7 +264,7 @@ const SettingsView = ({ onClearAll }) => (
             <p className="text-zinc-500 text-sm">premium@studentpro.com</p>
           </div>
         </div>
-        <button className="w-full py-3 bg-border-color hover:bg-[#222] rounded-xl text-sm font-bold transition-all border border-[#2a2a2a]">
+        <button className="w-full py-3 bg-border-color hover:bg-bg-secondary rounded-xl text-sm font-bold transition-all border border-border-color">
           Edit Profile
         </button>
       </div>
@@ -288,7 +290,7 @@ const SettingsView = ({ onClearAll }) => (
       </div>
 
       <div className="bg-bg-secondary border border-border-color rounded-3xl p-8 flex flex-col gap-6 md:col-span-2">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2 text-red-500">
+        <h3 className="text-lg font-bold flex items-center gap-2 text-red-500">
           <Trash2 size={18} /> Danger Zone
         </h3>
         <div className="flex items-center justify-between">
@@ -316,18 +318,18 @@ const NoteCard = ({ note, onEdit, onDelete }) => (
     animate={{ opacity: 1, scale: 1 }}
     exit={{ opacity: 0, scale: 0.9 }}
     whileHover={{ y: -5 }}
-    className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl p-6 flex flex-col gap-4 relative group hover:border-[#333333] transition-all duration-300 shadow-xl"
+    className="bg-bg-secondary border border-border-color rounded-2xl p-6 flex flex-col gap-4 relative group hover:border-[#333333] transition-all duration-300 shadow-xl"
   >
     <div className="flex justify-between items-start">
-      <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 bg-[#151515] px-3 py-1 rounded-full border border-[#222222]">
+      <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 bg-bg-primary px-3 py-1 rounded-full border border-border-color">
         <Calendar size={10} />
         {new Date(note.createdAt).toLocaleDateString()}
       </div>
       <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={() => onEdit(note)} className="p-2 bg-[#1a1a1a] hover:bg-white hover:text-black rounded-lg transition-all text-zinc-400">
+        <button onClick={() => onEdit(note)} className="p-2 bg-border-color hover:bg-white hover:text-black rounded-lg transition-all text-zinc-400">
           <Edit3 size={15} />
         </button>
-        <button onClick={() => onDelete(note.id)} className="p-2 bg-[#1a1a1a] hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-all text-zinc-400">
+        <button onClick={() => onDelete(note.id)} className="p-2 bg-border-color hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-all text-zinc-400">
           <Trash2 size={15} />
         </button>
       </div>
@@ -338,7 +340,7 @@ const NoteCard = ({ note, onEdit, onDelete }) => (
       <p className="text-sm text-zinc-400 mt-2 line-clamp-4 leading-relaxed font-medium">{note.text}</p>
     </div>
 
-    <div className="mt-auto pt-4 border-t border-[#1a1a1a] flex items-center justify-between text-[10px] text-zinc-600 font-mono">
+    <div className="mt-auto pt-4 border-t border-border-color flex items-center justify-between text-[10px] text-zinc-600 font-mono">
       <span className="flex items-center gap-1"><Clock size={10} /> {new Date(note.updatedAt).getHours()}:{new Date(note.updatedAt).getMinutes().toString().padStart(2, '0')}</span>
       <span>ID: {note.id.slice(0, 8)}...</span>
     </div>
@@ -363,11 +365,12 @@ const NoteModal = ({ isOpen, onClose, onSubmit, editingNote }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm px-6">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm px-6">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-[#0a0a0a] w-full max-w-2xl rounded-3xl border border-[#1a1a1a] shadow-2xl p-8 relative overflow-hidden"
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="bg-bg-secondary border border-border-color w-full max-w-2xl rounded-3xl p-8 shadow-2xl relative overflow-hidden"
       >
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
@@ -383,25 +386,25 @@ const NoteModal = ({ isOpen, onClose, onSubmit, editingNote }) => {
 
         <form onSubmit={(e) => { e.preventDefault(); onSubmit({ title, text, id: editingNote?.id }); }} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2.5">
-            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.1em]">Note Title</label>
+            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Give your note a title..."
               required
-              className="bg-black border border-[#1d1d1f] rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-white transition-all text-white placeholder-zinc-700"
+              className="bg-black border border-border-color rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-white transition-all text-white placeholder-zinc-700"
             />
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.1em]">Markdown Content</label>
+            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Content</label>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="What's on your mind?..."
               rows={8}
               required
-              className="bg-black border border-[#1d1d1f] rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-white transition-all text-white resize-none placeholder-zinc-700 leading-relaxed"
+              className="bg-black border border-border-color rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-white transition-all text-white resize-none placeholder-zinc-700 leading-relaxed"
             />
           </div>
 
@@ -516,12 +519,12 @@ function App() {
                     placeholder="Search metadata..."
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                    className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl pl-12 pr-4 py-3 w-full focus:outline-none focus:border-white transition-all text-sm placeholder-zinc-700"
+                    className="bg-bg-secondary border border-border-color rounded-xl pl-12 pr-4 py-3 w-full focus:outline-none focus:border-white transition-all text-sm placeholder-zinc-700"
                   />
                 </div>
                 <button
                   onClick={() => setSort(s => s === 'DESC' ? 'ASC' : 'DESC')}
-                  className="p-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl hover:border-zinc-500 transition-colors"
+                  className="p-3 bg-bg-secondary border border-border-color rounded-xl hover:border-zinc-500 transition-colors"
                   title="Toggle Sort"
                 >
                   <Filter size={18} className={sort === 'ASC' ? 'text-white' : 'text-zinc-500'} />
@@ -571,7 +574,7 @@ function App() {
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-6 pt-10 border-t border-[#1a1a1a]">
+                    <div className="flex items-center justify-center gap-6 pt-10 border-t border-border-color">
                       <button
                         disabled={page === 1}
                         onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -620,4 +623,3 @@ function App() {
 }
 
 export default App;
-
